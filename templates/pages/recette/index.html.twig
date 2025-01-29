@@ -8,7 +8,11 @@
 		{% if recettes is not empty %}
 			<h1>Mes recettes</h1>
 
-			<div class="container">
+			<a href="{{path('recette.new')}}" class="btn btn-primary my-2">
+				Ajouter une recette
+			</a>
+
+			<div class="container mt-4">
 				<div class="row g-3">
 
 					{% for recette in recettes %}

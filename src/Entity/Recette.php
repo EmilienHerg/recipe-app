@@ -23,16 +23,16 @@ class Recette
     #[ORM\Column(nullable: true)]
     #[Assert\Positive()]
     #[Assert\LessThan(1440)]
-    private ?float $time = null;
+    private ?int $time = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\Positive()]
     #[Assert\LessThan(50)]
-    private ?float $PeopleNb = null;
+    private ?int $PeopleNb = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\Range(min: 1, max: 5, notInRangeMessage: 'Le nombre de personnes doit être compris entre {{ min }} et {{ max }}.')]
-    private ?float $difficulty = null;
+    private ?int $difficulty = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
@@ -40,7 +40,7 @@ class Recette
     #[ORM\Column(nullable: true)]
     #[Assert\Positive()]
     #[Assert\LessThan(1000)]
-    private ?int $price = null;
+    private ?float $price = null;
 
     #[ORM\Column]
     private ?bool $isFavorite = null;
