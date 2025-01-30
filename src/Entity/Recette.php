@@ -4,54 +4,76 @@ namespace App\Entity;
 
 use App\Repository\RecetteRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[UniqueEntity('name')]
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: RecetteRepository::class)]
 class Recette
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(type: 'string', length: 50)]
+    #[Assert\NotBlank()]
     #[Assert\Length(min: 2, max: 50)]
     private ?string $name = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: 'integer', nullable: true)]
     #[Assert\Positive()]
-    #[Assert\LessThan(1440)]
+    #[Assert\LessThan(1441)]
     private ?int $time = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: 'integer', nullable: true)]
     #[Assert\Positive()]
-    #[Assert\LessThan(50)]
+    #[Assert\LessThan(51)]
     private ?int $PeopleNb = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: 'integer', nullable: true)]
     #[Assert\Range(min: 1, max: 5, notInRangeMessage: 'Le nombre de personnes doit être compris entre {{ min }} et {{ max }}.')]
     private ?int $difficulty = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank()]
     private ?string $description = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: 'float', nullable: true)]
     #[Assert\Positive()]
-    #[Assert\LessThan(1000)]
+    #[Assert\LessThan(1001)]
     private ?float $price = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'boolean')]
     private ?bool $isFavorite = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'datetime_immutable')]
     #[Assert\NotNull()]
     private ?DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(type: 'datetime_immutable')]
+    #[Assert\NotNull()]
+    private ?DateTimeImmutable $updatedAt = null;
+
+    #[ORM\ManyToMany(targetEntity: Ingredient::class)]
+    private $ingredients;
+
     public function __construct()
     {
+        $this->ingredients = new ArrayCollection();
         $this->createdAt = new DateTimeImmutable();
+        $this->updatedAt = new DateTimeImmutable();
+    }
+
+    #[ORM\PrePersist]
+    public function setUpdatedAtValue()
+    {
+        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -71,36 +93,36 @@ class Recette
         return $this;
     }
 
-    public function getTime(): ?float
+    public function getTime(): ?int
     {
         return $this->time;
     }
 
-    public function setTime(float $time): static
+    public function setTime(?int $time): static
     {
         $this->time = $time;
 
         return $this;
     }
 
-    public function getPeopleNb(): ?float
+    public function getPeopleNb(): ?int
     {
         return $this->PeopleNb;
     }
 
-    public function setPeopleNb(float $PeopleNb): static
+    public function setPeopleNb(?int $PeopleNb): static
     {
         $this->PeopleNb = $PeopleNb;
 
         return $this;
     }
 
-    public function getDifficulty(): ?float
+    public function getDifficulty(): ?int
     {
         return $this->difficulty;
     }
 
-    public function setDifficulty(float $difficulty): static
+    public function setDifficulty(?int $difficulty): static
     {
         $this->difficulty = $difficulty;
 
@@ -119,12 +141,12 @@ class Recette
         return $this;
     }
 
-    public function getPrice(): ?int
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(?int $price): static
+    public function setPrice(?float $price): static
     {
         $this->price = $price;
 
@@ -143,6 +165,18 @@ class Recette
         return $this;
     }
 
+    public function getIngredients(): Collection
+    {
+        return $this->ingredients;
+    }
+
+    public function addIngredient(Ingredient $ingredient): self
+    {
+        $this->ingredients[] = $ingredient;
+
+        return $this;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -151,6 +185,18 @@ class Recette
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
